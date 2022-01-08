@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'ConvertMp3ToMov' target in the 'ConvertMp3ToMov' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
