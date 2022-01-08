@@ -209,7 +209,7 @@
         [session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
                                            forView:tableView
                                            classes:[NSArray arrayWithObject:[NSPasteboardItem class]]
-                                     searchOptions:nil
+                                     searchOptions:[NSDictionary<NSPasteboardReadingOptionKey, id> dictionary]
                                         usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop)
          {
              // we can set the drag image directly
@@ -229,26 +229,6 @@
              
              [draggingItem setDraggingFrame:NSMakeRect(draggingItem.draggingFrame.origin.x,
                                                        draggingItem.draggingFrame.origin.y, image.size.width, image.size.height) contents:image];
-             return;
-             
-             NSImage *firstImage = cellView.draggingImageComponents[0];
-             NSImage *lastImage = cellViewLast.draggingImageComponents[0];
-             NSImage* resultImage = [[NSImage alloc] initWithSize:firstImage.size];
-             [resultImage lockFocus];
-             
-             [lastImage drawAtPoint:CGPointMake(0, firstImage.size.height) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
-             
-             [resultImage unlockFocus];
-             
-             NSMutableArray *images = [[NSMutableArray alloc] init];
-             [images addObject:resultImage];
-             
-             // the tableview will grab the entire table cell view bounds as its image by default.
-             // we can override NSTableCellView -draggingImageComponents
-             // which defaults to only including the image and text fields
-             draggingItem.imageComponentsProvider = ^NSArray*(void) { //return cellView.draggingImageComponents;};
-                 return images;
-             };
          }];
     }
 }

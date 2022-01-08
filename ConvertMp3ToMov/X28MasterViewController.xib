@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment version="1070" identifier="macosx"/>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -37,18 +37,18 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customView id="1">
-            <rect key="frame" x="0.0" y="0.0" width="715" height="569"/>
+        <customView misplaced="YES" id="1">
+            <rect key="frame" x="0.0" y="0.0" width="715" height="627"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3">
-                    <rect key="frame" x="20" y="229" width="478" height="320"/>
+                    <rect key="frame" x="20" y="229" width="478" height="349"/>
                     <clipView key="contentView" drawsBackground="NO" id="80h-aP-dNF">
-                        <rect key="frame" x="1" y="1" width="476" height="318"/>
+                        <rect key="frame" x="1" y="1" width="476" height="347"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" autosaveColumns="NO" rowSizeStyle="automatic" headerView="6" viewBased="YES" id="4">
-                                <rect key="frame" x="0.0" y="0.0" width="476" height="290"/>
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" alternatingRowBackgroundColors="YES" columnReordering="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="6" viewBased="YES" id="4">
+                                <rect key="frame" x="0.0" y="0.0" width="476" height="319"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -248,7 +248,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="7">
-                        <rect key="frame" x="224" y="17" width="15" height="102"/>
+                        <rect key="frame" x="462" y="29" width="15" height="0.0"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <tableHeaderView key="headerView" wantsLayer="YES" id="6">
@@ -258,7 +258,7 @@
                 </scrollView>
                 <box borderType="line" title="Convert" translatesAutoresizingMaskIntoConstraints="NO" id="21">
                     <rect key="frame" x="17" y="16" width="257" height="196"/>
-                    <view key="contentView" autoresizesSubviews="NO" id="Lav-fQ-5SZ">
+                    <view key="contentView" id="Lav-fQ-5SZ">
                         <rect key="frame" x="3" y="3" width="251" height="178"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -371,7 +371,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="374" customClass="X28ScrollerTransparent">
-                                    <rect key="frame" x="368" y="1" width="15" height="0.0"/>
+                                    <rect key="frame" x="41" y="1" width="15" height="0.0"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
@@ -472,7 +472,7 @@
                     </connections>
                 </button>
                 <box borderType="line" title="Artwork" translatesAutoresizingMaskIntoConstraints="NO" id="16">
-                    <rect key="frame" x="503" y="345" width="195" height="204"/>
+                    <rect key="frame" x="503" y="374" width="195" height="204"/>
                     <view key="contentView" id="ZaT-Vc-5NI">
                         <rect key="frame" x="3" y="3" width="189" height="186"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -537,7 +537,6 @@
                 <constraint firstItem="141" firstAttribute="top" secondItem="224" secondAttribute="bottom" constant="8" symbolic="YES" id="234"/>
                 <constraint firstAttribute="trailing" secondItem="141" secondAttribute="trailing" constant="20" symbolic="YES" id="247"/>
                 <constraint firstItem="193" firstAttribute="leading" secondItem="186" secondAttribute="trailing" constant="8" symbolic="YES" id="253"/>
-                <constraint firstItem="3" firstAttribute="top" secondItem="1" secondAttribute="top" constant="20" symbolic="YES" id="321"/>
                 <constraint firstItem="16" firstAttribute="leading" secondItem="3" secondAttribute="trailing" constant="8" symbolic="YES" id="346"/>
                 <constraint firstAttribute="trailing" secondItem="16" secondAttribute="trailing" constant="20" symbolic="YES" id="350"/>
                 <constraint firstItem="186" firstAttribute="leading" secondItem="3" secondAttribute="trailing" constant="8" symbolic="YES" id="355"/>
@@ -554,8 +553,9 @@
                 <constraint firstItem="186" firstAttribute="top" secondItem="193" secondAttribute="top" id="601"/>
                 <constraint firstItem="141" firstAttribute="leading" secondItem="21" secondAttribute="trailing" constant="8" symbolic="YES" id="740"/>
                 <constraint firstItem="186" firstAttribute="top" secondItem="584" secondAttribute="bottom" constant="5" id="EXl-Td-BVC"/>
+                <constraint firstItem="3" firstAttribute="top" secondItem="1" secondAttribute="top" constant="20" symbolic="YES" id="cqv-N5-0Kd"/>
             </constraints>
-            <point key="canvasLocation" x="138.5" y="265"/>
+            <point key="canvasLocation" x="138.5" y="264.5"/>
         </customView>
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="424" customClass="NSPanel">
             <windowStyleMask key="styleMask" utility="YES" documentModal="YES"/>
@@ -597,7 +597,7 @@ Gw
                         <rect key="frame" x="20" y="60" width="560" height="145"/>
                         <clipView key="contentView" id="nCE-bM-YfE">
                             <rect key="frame" x="1" y="1" width="543" height="128"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" id="531">
                                     <rect key="frame" x="0.0" y="0.0" width="543" height="128"/>

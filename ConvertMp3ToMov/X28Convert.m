@@ -255,7 +255,7 @@ progressFinderButton:(NSButton *)progressFinderButton
             }
             else {
                 [assetWriterInputAudio markAsFinished];
-                [assetWriterAudio finishWriting];
+                [assetWriterAudio finishWritingWithCompletionHandler:^(){}];
                 [assetReaderAudio cancelReading];
                 
                 [X28Convert appendToTextView:_progressTextView text:[NSString stringWithFormat:@"New AIFF: %@\n", [urlOut path]]];
@@ -412,7 +412,7 @@ progressFinderButton:(NSButton *)progressFinderButton
             else {
                 [assetWriterInput markAsFinished];
                 [assetWriter endSessionAtSourceTime:time];
-                [assetWriter finishWriting];
+                [assetWriter finishWritingWithCompletionHandler:^(){}];
                 
                 [_progressBar setIndeterminate:YES];
                 [_progressBar startAnimation:nil];
@@ -585,7 +585,7 @@ progressFinderButton:(NSButton *)progressFinderButton
                 else {
                     [assetWriterInput markAsFinished];
                     [assetWriter endSessionAtSourceTime:time];
-                    [assetWriter finishWriting];
+                    [assetWriter finishWritingWithCompletionHandler:^(){}];
                     
                     NSCharacterSet *charactersToRemove = [NSCharacterSet characterSetWithCharactersInString:@":."];
                     NSCharacterSet *characterSlashToReplace = [NSCharacterSet characterSetWithCharactersInString:@"/"];
@@ -752,7 +752,7 @@ progressFinderButton:(NSButton *)progressFinderButton
     [newImage lockFocus];
     [image setSize: size];
     [[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
-    [image compositeToPoint:NSZeroPoint operation:NSCompositeCopy];
+    [image drawAtPoint:NSZeroPoint fromRect:NSMakeRect(0, 0, size.width, size.height) operation:NSCompositeCopy fraction:1.0];
     [newImage unlockFocus];
     
     return newImage;
