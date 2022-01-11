@@ -19,6 +19,7 @@
 		8382E10C1BDF2C43001A05EB /* ConvertMP3ToMov.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8382E10A1BDF2C43001A05EB /* ConvertMP3ToMov.xcdatamodeld */; };
 		8382E1131BDF2CEF001A05EB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8382E1121BDF2CEF001A05EB /* AVFoundation.framework */; };
 		8382E1151BDF33C4001A05EB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8382E1141BDF33C4001A05EB /* CoreMedia.framework */; };
+		838E8748278D5E7300DA01D3 /* Screenshot.png in Resources */ = {isa = PBXBuildFile; fileRef = 838E8747278D5E7300DA01D3 /* Screenshot.png */; };
 		83CD8CB01BE0198A003FEFB1 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 83CD8CAF1BE0198A003FEFB1 /* CoreVideo.framework */; };
 		83CD922E1BE29694009CE9D3 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 83CD922D1BE29694009CE9D3 /* QuartzCore.framework */; };
 		83CD92381BE327A9009CE9D3 /* X28MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CD92361BE327A9009CE9D3 /* X28MasterViewController.m */; };
@@ -48,6 +49,8 @@
 		8382E10B1BDF2C43001A05EB /* ConvertMP3ToMov.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ConvertMP3ToMov.xcdatamodel; sourceTree = "<group>"; };
 		8382E1121BDF2CEF001A05EB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		8382E1141BDF33C4001A05EB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		838E8745278ABF0A00DA01D3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		838E8747278D5E7300DA01D3 /* Screenshot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Screenshot.png; sourceTree = "<group>"; };
 		83CD8CAF1BE0198A003FEFB1 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		83CD922D1BE29694009CE9D3 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		83CD92351BE327A9009CE9D3 /* X28MasterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X28MasterViewController.h; sourceTree = "<group>"; };
@@ -78,7 +81,9 @@
 		8382E0E61BDF2C43001A05EB = {
 			isa = PBXGroup;
 			children = (
+				838E8745278ABF0A00DA01D3 /* README.md */,
 				8300AC862789718C009942CF /* LICENSE */,
+				838E8747278D5E7300DA01D3 /* Screenshot.png */,
 				8300AC812789622A009942CF /* .gitignore */,
 				8382E0F81BDF2C43001A05EB /* ConvertMp3ToMov */,
 				8382E0F11BDF2C43001A05EB /* Frameworks */,
@@ -207,6 +212,7 @@
 				8300AC822789622A009942CF /* .gitignore in Resources */,
 				8382E0FD1BDF2C43001A05EB /* InfoPlist.strings in Resources */,
 				8382E1031BDF2C43001A05EB /* Credits.rtf in Resources */,
+				838E8748278D5E7300DA01D3 /* Screenshot.png in Resources */,
 				8382E1091BDF2C43001A05EB /* MainMenu.xib in Resources */,
 				83CD92391BE327A9009CE9D3 /* X28MasterViewController.xib in Resources */,
 			);
