@@ -92,6 +92,11 @@
     [[self.progressTextView textContainer] setWidthTracksTextView:NO];
     
     [self.songsTableView registerForDraggedTypes:[NSArray arrayWithObject:@"NSMutableArray"]];
+    
+    if (@available(macOS 10.14, *)) {
+        self.allSongsDetailsTextView.usesAdaptiveColorMappingForDarkAppearance = true;
+        self.progressTextView.usesAdaptiveColorMappingForDarkAppearance = true;
+    }
 }
 
 - (void)loadPictureTypes {
