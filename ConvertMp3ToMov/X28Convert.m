@@ -70,8 +70,6 @@ progressFinderButton:(NSButton *)progressFinderButton
     
     _cancel = NO;
     
-//    _combinedVideoDetails.string = @"";
-    
     _videoName = [_videoName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
  
     [X28Convert appendToTextView:_progressTextView text:[NSString stringWithFormat:@"Picture: %@\n", (_urlImage) ? [_urlImage path] : @""]];
@@ -255,12 +253,13 @@ progressFinderButton:(NSButton *)progressFinderButton
             }
             else {
                 [assetWriterInputAudio markAsFinished];
-                [assetWriterAudio finishWritingWithCompletionHandler:^(){}];
-                [assetReaderAudio cancelReading];
-                
-                [X28Convert appendToTextView:_progressTextView text:[NSString stringWithFormat:@"New AIFF: %@\n", [urlOut path]]];
-                
-                [self convertToAiffAtIndex:(index + 1)];
+                [assetWriterAudio finishWritingWithCompletionHandler:^(){
+                    [assetReaderAudio cancelReading];
+                    
+                    [X28Convert appendToTextView:_progressTextView text:[NSString stringWithFormat:@"New AIFF: %@\n", [urlOut path]]];
+                    
+                    [self convertToAiffAtIndex:(index + 1)];
+                }];
             }
         }
     }];
@@ -337,15 +336,6 @@ progressFinderButton:(NSButton *)progressFinderButton
     NSRect rect = NSMakeRect(0, 0, image.size.width, image.size.height);
     CGImageRef imageRef = [image CGImageForProposedRect:&rect context:NULL hints:nil];
     
-    /*NSMutableDictionary *compressionSettings = NULL;
-     compressionSettings = [NSMutableDictionary dictionary];
-     [compressionSettings setObject:AVVideoColorPrimaries_ITU_R_709_2
-     forKey:AVVideoColorPrimariesKey];
-     [compressionSettings setObject:AVVideoTransferFunction_ITU_R_709_2
-     forKey:AVVideoTransferFunctionKey];
-     [compressionSettings setObject:AVVideoYCbCrMatrix_ITU_R_709_2
-     forKey:AVVideoYCbCrMatrixKey];*/
-    
     
     NSDictionary *videoCleanApertureSettings = [NSDictionary dictionaryWithObjectsAndKeys:
                                                 [NSNumber numberWithInt:rect.size.width], AVVideoCleanApertureWidthKey,
@@ -412,50 +402,50 @@ progressFinderButton:(NSButton *)progressFinderButton
             else {
                 [assetWriterInput markAsFinished];
                 [assetWriter endSessionAtSourceTime:time];
-                [assetWriter finishWritingWithCompletionHandler:^(){}];
-                
-                [_progressBar setIndeterminate:YES];
-                [_progressBar startAnimation:nil];
-                
-                NSCharacterSet *charactersToRemove = [NSCharacterSet characterSetWithCharactersInString:@":."];
-                NSCharacterSet *characterSlashToReplace = [NSCharacterSet characterSetWithCharactersInString:@"/"];
-                NSString *artist = nil;
-                NSString *title = nil;
-                for (AVMetadataItem *item in [urlAsset commonMetadata]) {
-                    if ([[item commonKey] isEqualToString:AVMetadataCommonKeyArtist])
-                    {
-                        artist = item.stringValue;
-                        if (artist != nil) {
-                            artist = [[artist componentsSeparatedByCharactersInSet: charactersToRemove] componentsJoinedByString: @""];
-                            artist = [[artist componentsSeparatedByCharactersInSet: characterSlashToReplace] componentsJoinedByString: @":"];
+                [assetWriter finishWritingWithCompletionHandler:^(){
+                    [_progressBar setIndeterminate:YES];
+                    [_progressBar startAnimation:nil];
+                    
+                    NSCharacterSet *charactersToRemove = [NSCharacterSet characterSetWithCharactersInString:@":."];
+                    NSCharacterSet *characterSlashToReplace = [NSCharacterSet characterSetWithCharactersInString:@"/"];
+                    NSString *artist = nil;
+                    NSString *title = nil;
+                    for (AVMetadataItem *item in [urlAsset commonMetadata]) {
+                        if ([[item commonKey] isEqualToString:AVMetadataCommonKeyArtist])
+                        {
+                            artist = item.stringValue;
+                            if (artist != nil) {
+                                artist = [[artist componentsSeparatedByCharactersInSet: charactersToRemove] componentsJoinedByString: @""];
+                                artist = [[artist componentsSeparatedByCharactersInSet: characterSlashToReplace] componentsJoinedByString: @":"];
+                            }
+                        }
+                        else if ([[item commonKey] isEqualToString:AVMetadataCommonKeyTitle])
+                        {
+                            title = item.stringValue;
+                            if (title != nil) {
+                                title = [[title componentsSeparatedByCharactersInSet: charactersToRemove] componentsJoinedByString: @""];
+                                title = [[title componentsSeparatedByCharactersInSet: characterSlashToReplace] componentsJoinedByString: @":"];
+                            }
+                        }
+                        else if (artist != nil
+                        &&       title != nil) {
+                            break;
                         }
                     }
-                    else if ([[item commonKey] isEqualToString:AVMetadataCommonKeyTitle])
-                    {
-                        title = item.stringValue;
-                        if (title != nil) {
-                            title = [[title componentsSeparatedByCharactersInSet: charactersToRemove] componentsJoinedByString: @""];
-                            title = [[title componentsSeparatedByCharactersInSet: characterSlashToReplace] componentsJoinedByString: @":"];
-                        }
-                    }
-                    else if (artist != nil
-                    &&       title != nil) {
-                        break;
-                    }
-                }
-                
-                NSString *videoName = [NSString stringWithFormat:@"%@%@%@%@",
-                                       artist,
-                                       (artist != nil && title != nil) ? @" - " : @"",
-                                       title,
-                                       @".mov"];
-                
-                [self combineAudio:(NSURL *)urlAsset.URL
-                         withVideo:(NSURL *)urlVideo
-                         videoName:videoName
-                        completion:^{
-                            [self convertToVideoAtIndex:(index + 1)];
-                        }];
+                    
+                    NSString *videoName = [NSString stringWithFormat:@"%@%@%@%@",
+                                           artist,
+                                           (artist != nil && title != nil) ? @" - " : @"",
+                                           title,
+                                           @".mov"];
+                    
+                    [self combineAudio:(NSURL *)urlAsset.URL
+                             withVideo:(NSURL *)urlVideo
+                             videoName:videoName
+                            completion:^{
+                                [self convertToVideoAtIndex:(index + 1)];
+                            }];
+                }];
 
             }
         }
@@ -585,38 +575,38 @@ progressFinderButton:(NSButton *)progressFinderButton
                 else {
                     [assetWriterInput markAsFinished];
                     [assetWriter endSessionAtSourceTime:time];
-                    [assetWriter finishWritingWithCompletionHandler:^(){}];
-                    
-                    NSCharacterSet *charactersToRemove = [NSCharacterSet characterSetWithCharactersInString:@":."];
-                    NSCharacterSet *characterSlashToReplace = [NSCharacterSet characterSetWithCharactersInString:@"/"];
-                    if (_videoName != nil) {
-                        _videoName = [[_videoName componentsSeparatedByCharactersInSet: charactersToRemove] componentsJoinedByString: @""];
-                        _videoName = [[_videoName componentsSeparatedByCharactersInSet: characterSlashToReplace] componentsJoinedByString: @":"];
-                    }
-                    
-                    [self combineAudio:urlAudio
-                             withVideo:urlVideo
-                             videoName:[NSString stringWithFormat:@"%@.mov", _videoName]
-                            completion:^{
-                                NSError *error;
-                                
-                                if ([[NSFileManager defaultManager] fileExistsAtPath:[urlAudio path]]) {
-                                    [[NSFileManager defaultManager] removeItemAtURL: urlAudio error: &error];
-                                }
-                                
-                                if ([[NSFileManager defaultManager] fileExistsAtPath:[urlVideo path]]) {
-                                    [[NSFileManager defaultManager] removeItemAtURL: urlVideo error: &error];
-                                }
-                                
-                                [_progressIndicator stopAnimation:nil];
-                                [_progressBar setIndeterminate:YES];
-                                [_progressBar stopAnimation:nil];
-                                [_progressBar setHidden:YES];
-                                _progressTextField.textColor = [NSColor greenColor];
-                                _progressTextField.stringValue = @"Conversion complete.";
-                                _progressButton.title = @"Done";
-                                [_progressFinderButton setHidden:NO];
-                            }];
+                    [assetWriter finishWritingWithCompletionHandler:^(){
+                        NSCharacterSet *charactersToRemove = [NSCharacterSet characterSetWithCharactersInString:@":."];
+                        NSCharacterSet *characterSlashToReplace = [NSCharacterSet characterSetWithCharactersInString:@"/"];
+                        if (_videoName != nil) {
+                            _videoName = [[_videoName componentsSeparatedByCharactersInSet: charactersToRemove] componentsJoinedByString: @""];
+                            _videoName = [[_videoName componentsSeparatedByCharactersInSet: characterSlashToReplace] componentsJoinedByString: @":"];
+                        }
+                        
+                        [self combineAudio:urlAudio
+                                 withVideo:urlVideo
+                                 videoName:[NSString stringWithFormat:@"%@.mov", _videoName]
+                                completion:^{
+                                    NSError *error;
+                                    
+                                    if ([[NSFileManager defaultManager] fileExistsAtPath:[urlAudio path]]) {
+                                        [[NSFileManager defaultManager] removeItemAtURL: urlAudio error: &error];
+                                    }
+                                    
+                                    if ([[NSFileManager defaultManager] fileExistsAtPath:[urlVideo path]]) {
+                                        [[NSFileManager defaultManager] removeItemAtURL: urlVideo error: &error];
+                                    }
+                                    
+                                    [_progressIndicator stopAnimation:nil];
+                                    [_progressBar setIndeterminate:YES];
+                                    [_progressBar stopAnimation:nil];
+                                    [_progressBar setHidden:YES];
+                                    _progressTextField.textColor = [NSColor greenColor];
+                                    _progressTextField.stringValue = @"Conversion complete.";
+                                    _progressButton.title = @"Done";
+                                    [_progressFinderButton setHidden:NO];
+                                }];
+                    }];
                     
                 }
             }
@@ -804,27 +794,16 @@ progressFinderButton:(NSButton *)progressFinderButton
         return;
     }
     
-    //dispatch_async(dispatch_get_main_queue(), ^{
-        NSAttributedString* attr = [[NSAttributedString alloc] initWithString:text];
-        
-        [[textView textStorage] appendAttributedString:attr];
-        
-        //textView.string = [NSString stringWithFormat:@"%@%@", textView.string, text];
-        
-        /*@try {
-            textView.string = [NSString stringWithFormat:@"%@%@", textView.string, text];
-        }
-        @catch (NSException *exception) {
-            
-        }*/
-        
-        if (scrollToEnd) {
-            [textView scrollRangeToVisible:NSMakeRange([[textView string] length], 0)];
-        }
-        else {
-            [textView scrollRangeToVisible:NSMakeRange(0, 0)];
-        }
-    //});
+    NSAttributedString* attr = [[NSAttributedString alloc] initWithString:text];
+    
+    [[textView textStorage] appendAttributedString:attr];
+    
+    if (scrollToEnd) {
+        [textView scrollRangeToVisible:NSMakeRange([[textView string] length], 0)];
+    }
+    else {
+        [textView scrollRangeToVisible:NSMakeRange(0, 0)];
+    }
 }
 
 + (void)close
