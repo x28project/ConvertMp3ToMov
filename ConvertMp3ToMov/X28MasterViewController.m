@@ -195,7 +195,7 @@
         [tableView reloadData];
         [tableView deselectAll:nil];
         
-        [self performSelectorInBackground:@selector(loadAllSongsDetails) withObject:nil];
+        [self performSelectorInBackground:@selector(loadAllSongsDetails:) withObject:nil];
         
         return YES;
     }
@@ -257,7 +257,7 @@
         [self.songsTableView moveRowAtIndex:idx toIndex:(idx - 1)];
     }];
     
-    [self performSelectorInBackground:@selector(loadAllSongsDetails) withObject:nil];
+    [self performSelectorInBackground:@selector(loadAllSongsDetails:) withObject:nil];
 }
 
 - (IBAction)moveSongDown:(id)sender {
@@ -277,7 +277,7 @@
         index = [self.songsTableView.selectedRowIndexes indexLessThanIndex:index];
     }
     
-    [self performSelectorInBackground:@selector(loadAllSongsDetails) withObject:nil];
+    [self performSelectorInBackground:@selector(loadAllSongsDetails:) withObject:nil];
 }
 
 - (IBAction)addSong:(id)sender {
@@ -303,7 +303,7 @@
     
     [self resizeTableColumns];
     
-    [self performSelectorInBackground:@selector(loadAllSongsDetails) withObject:nil];
+    [self performSelectorInBackground:@selector(loadAllSongsDetails:) withObject:nil];
 }
 
 - (void)loadSongs:(NSArray *)urls {
@@ -402,13 +402,13 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.loadingPanel orderOut:self];
+        [NSApp endSheet:self.loadingPanel];
+        
+        [self.allSongsDetailsIndicator startAnimation:nil];
+        [self performSelectorInBackground:@selector(loadAllSongsDetails:) withObject:nil];
+        
+        [self performSelectorOnMainThread:@selector(resizeTableColumns) withObject:nil waitUntilDone:YES];
     });
-    [NSApp endSheet:self.loadingPanel];
-    
-    [self.allSongsDetailsIndicator startAnimation:nil];
-    [self performSelectorInBackground:@selector(loadAllSongsDetails) withObject:nil];
-    
-    [self performSelectorOnMainThread:@selector(resizeTableColumns) withObject:nil waitUntilDone:YES];
 }
 
 - (void)addSongToTable:(X28Song *)song {
@@ -447,13 +447,28 @@
 - (void)controlTextDidChange:(NSNotification *)notification {
     
     [self.allSongsDetailsIndicator startAnimation:nil];
-    [self performSelectorInBackground:@selector(loadAllSongsDetails) withObject:nil];
+    [self performSelectorInBackground:@selector(loadAllSongsDetails:) withObject:nil];
 }
 
 - (IBAction)loadAllSongsDetails:(id)sender {
-    [self loadAllSongsDetails];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        BOOL toVideo = self.eachSongMovButton.state;
+        
+        NSString *allSongsName = nil;
+        if (self.allSongsMovButton.state) {
+            allSongsName = self.allSongsNameTextField.stringValue;
+        }
+        
+        NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 [NSNumber numberWithBool:toVideo], @"toVideo",
+                                 allSongsName, @"allSongsName",
+                                 nil];
+        
+        [self loadAllSongsDetailsWithOptions:options];
+    });
 }
-- (void)loadAllSongsDetails {
+- (void)loadAllSongsDetailsWithOptions:(NSDictionary *)options {
     
     @synchronized(self) {
     
@@ -523,15 +538,18 @@
                           text:@""
                    scrollToEnd:NO
                          clear:YES];
-        [self.allSongsDetailsIncludeArtistButton setHidden:YES];
-        [self.allSongsDetailsCopyButton setHidden:YES];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.allSongsDetailsIncludeArtistButton setHidden:YES];
+            [self.allSongsDetailsCopyButton setHidden:YES];
+        });
         
         for (int j = 0; j < (trackTitles.count + 1); j++) {
             if (trackTitles.count == 0) {
                 return;
             }
             int iOverride = j;
-            if (! self.eachSongMovButton.state) {
+            if (! [[options objectForKey:@"toVideo"] boolValue]) {
                 j = (int)trackTitles.count;
             }
             if (j == trackTitles.count) {
@@ -586,7 +604,8 @@
                     break;
                 }
             }
-            NSString *allSongsNameTextFieldStringValue = self.allSongsNameTextField.stringValue;
+            
+            NSString *allSongsNameTextFieldStringValue = [options objectForKey:@"allSongsName"];
             if (allSongsNameTextFieldStringValue.length > 0
             &&  iOverride == -1) {
                 [self appendToTextView:self.allSongsDetailsTextView
@@ -811,18 +830,6 @@
                                    didEndSelector:nil
                                       contextInfo:nil];
     
-    [self performSelectorInBackground:@selector(convertSongs) withObject:nil];
-}
-- (void)convertSongs {
-    
-    NSError *error = nil;
-    
-    /*NSMutableArray *urls = [[NSMutableArray alloc] init];
-    for (X28Song *song in self.songs) {
-        [urls addObject:[[NSURL alloc] initFileURLWithPath:[song path]]];
-    }*/
-    
-    
     BOOL toAiff = self.eachSongAiffButton.state;
     BOOL toVideo = self.eachSongMovButton.state;
     BOOL toCombinedVideo = self.allSongsMovButton.state;
@@ -834,6 +841,20 @@
         allSongsName = self.allSongsNameTextField.stringValue;
     }
     
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithBool:toAiff], @"toAiff",
+                             [NSNumber numberWithBool:toVideo], @"toVideo",
+                             [NSNumber numberWithBool:toCombinedVideo], @"toCombinedVideo",
+                             videoSize, @"videoSize",
+                             allSongsName, @"allSongsName",
+                             nil];
+    
+    [self performSelectorInBackground:@selector(convertSongWithOptionss:) withObject:options];
+}
+- (void)convertSongWithOptionss:(NSDictionary *)options {
+    
+    NSError *error = nil;
+    
     NSURL *urlImage = self.pictureURL;
     
     NSURL *documents = [[NSFileManager defaultManager] URLForDirectory: NSDocumentDirectory
@@ -843,11 +864,11 @@
                                                                  error: &error];
 
     [X28Convert convertSongs:self.songs
-                      toAiff:toAiff
-                     toVideo:toVideo
-             toCombinedVideo:toCombinedVideo
-                   videoSize:videoSize
-                   videoName:allSongsName
+                      toAiff:[[options objectForKey:@"toAiff"] boolValue]
+                     toVideo:[[options objectForKey:@"toVideo"] boolValue]
+             toCombinedVideo:[[options objectForKey:@"toCombinedVideo"] boolValue]
+                   videoSize:[options objectForKey:@"videoSize"]
+                   videoName:[options objectForKey:@"allSongsName"]
                        image:urlImage
                    directory:documents
         combinedVideoDetails:self.allSongsDetailsTextView

@@ -60,13 +60,15 @@ progressFinderButton:(NSButton *)progressFinderButton
     _progressButton = progressButton;
     _progressFinderButton = progressFinderButton;
     
-    if (_progressBar.usesThreadedAnimation == NO) {
-        [_progressBar setUsesThreadedAnimation:YES];
-    }
-    [_progressBar setIndeterminate:YES];
-    [_progressBar stopAnimation:nil];
-    [_progressBar startAnimation:nil];
-    [_progressBar setHidden:NO];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (_progressBar.usesThreadedAnimation == NO) {
+            [_progressBar setUsesThreadedAnimation:YES];
+        }
+        [_progressBar setIndeterminate:YES];
+        [_progressBar stopAnimation:nil];
+        [_progressBar startAnimation:nil];
+        [_progressBar setHidden:NO];
+    });
     
     _cancel = NO;
     
@@ -384,18 +386,22 @@ progressFinderButton:(NSButton *)progressFinderButton
     pixelBufferRef = [self pixelBufferFromCGImage:imageRef];
     
     _count = 0;
-    [_progressBar setIndeterminate:NO];
-    [_progressBar stopAnimation:nil];
-    [_progressBar setDoubleValue:0];
-    _progressBar.minValue = 0;
-    _progressBar.maxValue = audioDurationSeconds * 15;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_progressBar setIndeterminate:NO];
+        [_progressBar stopAnimation:nil];
+        [_progressBar setDoubleValue:0];
+        _progressBar.minValue = 0;
+        _progressBar.maxValue = audioDurationSeconds * 15;
+    });
     dispatch_queue_t writerQueue = dispatch_queue_create("writerQueue", NULL);
     [assetWriterInput requestMediaDataWhenReadyOnQueue:writerQueue usingBlock:^{
         while (assetWriterInput.readyForMoreMediaData) {
             if (_count < urlAsset.duration.value
             &&  _count < (audioDurationSeconds * 15))
             {
-                [_progressBar setDoubleValue:_count];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [_progressBar setDoubleValue:_count];
+                });
                 [inputPixelBufferAdaptor appendPixelBuffer:pixelBufferRef withPresentationTime:CMTimeMake(_count, 15)];
                 _count++;
             }
@@ -403,8 +409,10 @@ progressFinderButton:(NSButton *)progressFinderButton
                 [assetWriterInput markAsFinished];
                 [assetWriter endSessionAtSourceTime:time];
                 [assetWriter finishWritingWithCompletionHandler:^(){
-                    [_progressBar setIndeterminate:YES];
-                    [_progressBar startAnimation:nil];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [_progressBar setIndeterminate:YES];
+                        [_progressBar startAnimation:nil];
+                    });
                     
                     NSCharacterSet *charactersToRemove = [NSCharacterSet characterSetWithCharactersInString:@":."];
                     NSCharacterSet *characterSlashToReplace = [NSCharacterSet characterSetWithCharactersInString:@"/"];
@@ -557,18 +565,22 @@ progressFinderButton:(NSButton *)progressFinderButton
         
         _count = 0;
         float audioDurationSeconds = CMTimeGetSeconds(composition.duration);
-        [_progressBar setIndeterminate:NO];
-        [_progressBar stopAnimation:nil];
-        [_progressBar setDoubleValue:0];
-        _progressBar.minValue = 0;
-        _progressBar.maxValue = audioDurationSeconds * 15;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_progressBar setIndeterminate:NO];
+            [_progressBar stopAnimation:nil];
+            [_progressBar setDoubleValue:0];
+            _progressBar.minValue = 0;
+            _progressBar.maxValue = audioDurationSeconds * 15;
+        });
         dispatch_queue_t writerQueue = dispatch_queue_create("writerQueue", NULL);
         [assetWriterInput requestMediaDataWhenReadyOnQueue:writerQueue usingBlock:^{
             while (assetWriterInput.readyForMoreMediaData) {
                 if (_count < composition.duration.value
                 &&  _count < (audioDurationSeconds * 15))
                 {
-                    [_progressBar setDoubleValue:_count];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [_progressBar setDoubleValue:_count];
+                    });
                     [inputPixelBufferAdaptor appendPixelBuffer:pixelBufferRef withPresentationTime:CMTimeMake(_count, 15)];
                     _count++;
                 }
@@ -596,15 +608,17 @@ progressFinderButton:(NSButton *)progressFinderButton
                                     if ([[NSFileManager defaultManager] fileExistsAtPath:[urlVideo path]]) {
                                         [[NSFileManager defaultManager] removeItemAtURL: urlVideo error: &error];
                                     }
-                                    
-                                    [_progressIndicator stopAnimation:nil];
-                                    [_progressBar setIndeterminate:YES];
-                                    [_progressBar stopAnimation:nil];
-                                    [_progressBar setHidden:YES];
-                                    _progressTextField.textColor = [NSColor greenColor];
-                                    _progressTextField.stringValue = @"Conversion complete.";
-                                    _progressButton.title = @"Done";
-                                    [_progressFinderButton setHidden:NO];
+                            
+                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                        [_progressIndicator stopAnimation:nil];
+                                        [_progressBar setIndeterminate:YES];
+                                        [_progressBar stopAnimation:nil];
+                                        [_progressBar setHidden:YES];
+                                        _progressTextField.textColor = [NSColor greenColor];
+                                        _progressTextField.stringValue = @"Conversion complete.";
+                                        _progressButton.title = @"Done";
+                                        [_progressFinderButton setHidden:NO];
+                                    });
                                 }];
                     }];
                     
@@ -675,12 +689,12 @@ progressFinderButton:(NSButton *)progressFinderButton
         }
     }];
     
-    [_progressBar setIndeterminate:NO];
-    [_progressBar stopAnimation:nil];
-    [_progressBar setDoubleValue:0];
-    _progressBar.minValue = 0;
-    _progressBar.maxValue = 1;
-    dispatch_async(dispatch_get_main_queue(), ^(void){
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_progressBar setIndeterminate:NO];
+        [_progressBar stopAnimation:nil];
+        [_progressBar setDoubleValue:0];
+        _progressBar.minValue = 0;
+        _progressBar.maxValue = 1;
         progressBarTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(updateProgressBar) userInfo:nil repeats:YES];
     });
 }
@@ -902,123 +916,6 @@ progressFinderButton:(NSButton *)progressFinderButton
             }
         }
     }
-    
-//    NSDate* date = [NSDate dateWithTimeIntervalSince1970:CMTimeGetSeconds(time)];
-//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-//    [dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
-//    [dateFormatter setDateFormat:@"HH:mm:ss"];
-//    NSString* stringFromDate = [dateFormatter stringFromDate:date];
-//    if ([stringFromDate hasPrefix:@"00:0"]) {
-//        [dateFormatter setDateFormat:@"m:ss"];
-//    }
-//    else if ([stringFromDate hasPrefix:@"00:"]) {
-//        [dateFormatter setDateFormat:@"mm:ss"];
-//    }
-//    else if ([stringFromDate hasPrefix:@"0"]) {
-//        [dateFormatter setDateFormat:@"H:mm:ss"];
-//    }
-//    
-//    textView.string = @"";
-//    for (int i = 0; i < artists.count; i++) {
-//        
-//        if (_cancelGetCombinedVideoDetails) {
-//            return nil;
-//        }
-//        
-//        NSString *artist = artists[i];
-//        if (artists.count == 1) {
-//            [X28Convert appendToTextView:textView
-//                                    text:[NSString stringWithFormat:@"Artist: %@\n",
-//                                          artist]
-//                             scrollToEnd:NO];
-//        }
-//        else {
-//            if (i == 0) {
-//                [X28Convert appendToTextView:textView
-//                                        text:[NSString stringWithFormat:@"Artists: %@",
-//                                              artist]
-//                                 scrollToEnd:NO];
-//            }
-//            else {
-//                [X28Convert appendToTextView:textView
-//                                        text:[NSString stringWithFormat:@", %@",
-//                                              artist]
-//                                 scrollToEnd:NO];
-//                
-//                if (i == (artists.count - 1)) {
-//                    [X28Convert appendToTextView:textView
-//                                            text:[NSString stringWithFormat:@"\n"]
-//                                     scrollToEnd:NO];
-//                }
-//            }
-//        }
-//    }
-//    for (int i = 0; i < albumNames.count; i++) {
-//        
-//        if (_cancelGetCombinedVideoDetails) {
-//            return nil;
-//        }
-//        
-//        NSString *albumName = albumNames[i];
-//        if (albumNames.count == 1) {
-//            [X28Convert appendToTextView:textView
-//                                    text:[NSString stringWithFormat:@"Album: %@\n",
-//                                          albumName]
-//                             scrollToEnd:NO];
-//        }
-//        else {
-//            if (i == 0) {
-//                [X28Convert appendToTextView:textView
-//                                        text:[NSString stringWithFormat:@"Albums: %@",
-//                                              albumName]
-//                                 scrollToEnd:NO];
-//            }
-//            else {
-//                [X28Convert appendToTextView:textView
-//                                        text:[NSString stringWithFormat:@", %@",
-//                                              albumName]
-//                                 scrollToEnd:NO];
-//                
-//                if (i == (albumNames.count - 1)) {
-//                    [X28Convert appendToTextView:textView
-//                                            text:[NSString stringWithFormat:@"\n"]
-//                                     scrollToEnd:NO];
-//                }
-//            }
-//        }
-//    }
-//    
-//    if (_cancelGetCombinedVideoDetails) {
-//        return nil;
-//    }
-//    
-//    [X28Convert appendToTextView:textView
-//                            text:[NSString stringWithFormat:@"\n"]
-//                     scrollToEnd:NO];
-//    for (int i = 0; i < trackTitles.count; i++) {
-//        
-//        if (_cancelGetCombinedVideoDetails) {
-//            return nil;
-//        }
-//        
-//        if (artists.count == 1) {
-//            [X28Convert appendToTextView:textView
-//                                    text:[NSString stringWithFormat:@"%@   %@. %@\n",
-//                                          [dateFormatter stringFromDate:trackTimes[i]],
-//                                          trackNumbers[i],
-//                                          trackTitles[i]]
-//                             scrollToEnd:NO];
-//        }
-//        else {
-//            [X28Convert appendToTextView:textView
-//                                    text:[NSString stringWithFormat:@"%@   %@. %@ - %@\n",
-//                                          [dateFormatter stringFromDate:trackTimes[i]],
-//                                          trackNumbers[i],
-//                                          trackArtists[i],
-//                                          trackTitles[i]]
-//                             scrollToEnd:NO];
-//        }
-//    }
     
     NSArray *compositionAndTime = [[NSArray alloc] initWithObjects:
                                    composition,
