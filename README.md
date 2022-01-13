@@ -1,4 +1,4 @@
-# Convert MP3 To Mov
+# Convert MP3 To MOV
 
 A macOS app that converts MP3 audio into MOV video art tracks. The generated video plays the selected audio while showing a selected artwork image.
 
